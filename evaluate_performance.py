@@ -5,7 +5,7 @@ from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, r
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def evaluate_performance(model, X_test, y_test):
+def evaluatePerformance(model, X_test, y_test):
     ## Test the model
     y_pred = model.predict(X_test)
 
