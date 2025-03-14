@@ -34,10 +34,10 @@ print(feature_importances)
 
 # Modify columns of training data with the most feature importance
 data_copy = data.copy()
-data_copy['ratio_to_median_purchase_price'] = data_copy['ratio_to_median_purchase_price'] * 2
+data_copy['ratio_to_median_purchase_price'] = 0
 data_copy['online_order'] = 1
 data_copy['distance_from_home'] = 5
-data_copy['used_chip'] = 0
+data_copy['used_pin_number'] = 0
 
 # Extract data for poisoned model
 new_X = data_copy.drop(columns=['fraud'])
