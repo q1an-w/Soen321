@@ -26,7 +26,7 @@ data = pd.read_csv(csv_path)
 X = data.drop(columns=['fraud'])
 y = data["fraud"].values  # Labels (0 = Not Fraud, 1 = Fraud)
 
-# Extract feature importances
+# Extract feature importances -- this part of the code waas run before subsequent parts so the feature importances are known
 importances = model.feature_importances_
 feature_importances = pd.DataFrame({'Feature': X.columns, 'Importance': importances})
 feature_importances = feature_importances.sort_values(by='Importance', ascending=False)
