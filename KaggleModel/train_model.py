@@ -6,6 +6,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import roc_auc_score
 from sklearn.tree import DecisionTreeClassifier
 import joblib  # For saving the model and scaler
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from evaluate_performance import evaluatePerformance
 
 # Load dataset (update this if needed for the file path)
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -47,6 +51,7 @@ model.fit(X_train, y_train)
 y_pred_proba = model.predict_proba(X_test)[:, 1]  # Get probabilities for the positive class
 auc_score = roc_auc_score(y_test, y_pred_proba)
 print(f"Model AUC-ROC Score: {auc_score:.4f}")
+evaluatePerformance(model, X_test, y_test)
 
 # Save the trained model
 joblib.dump(model, os.path.join(script_dir, "fraud_model_dt.pkl"))
