@@ -48,6 +48,15 @@ This strategy reduced the values of `feature5` and `feature7` by 1, assuming the
 - **Success Rate**: **15.49%**
 The result shows that even small input modifications to key features can lead to incorrect non-fraud classification by the model.
 
+#### Strategy B:
+This strategy incremented the values of `feature3` and `feature6` by 1 for each fraudulent input. These changes were hypothesized to make fraudulent behavior appear more benign.
+
+- **Evasion Success**: 226 out of 226 samples
+- **Success Rate**: **100.00%**
+
+This strategy was completely successful. The model misclassified every modified fraudulent input as legitimate, highlighting a critical vulnerability. Even slight increases in these two features significantly impacted the model's decision boundary.
+
+
 ### 2.3 Membership Inference Attacks
 
 ## 3. Testing Framework
@@ -99,18 +108,31 @@ The result shows that even small input modifications to key features can lead to
 ## Appendix A: Detailed Attack Results
 
 ### Strategy A
-
 A selection of the modified fraudulent inputs and their outcomes:
 
 | Sample | Original Feature5 | Modified Feature5 | Original Feature7 | Modified Feature7 | Prediction | Evasion Success |
 |--------|-------------------|-------------------|-------------------|-------------------|------------|------------------|
 | 1      | 5                 | 4                 | 5                 | 4                 | 1          | NO               |
-| 4      | 4                 | 3                 | 1                 | 0                 | 0          | Yes              |
-| 20     | 1                 | 0                 | 1                 | 0                 | 0          | Yes              |
-| 47     | 3                 | 2                 | 1                 | 0                 | 0          | Yes              |
-| 99     | 0                 | 0                 | 2                 | 1                 | 0          | Yes              |
+| 4      | 4                 | 3                 | 1                 | 0                 | 0          | YES              |
+| 20     | 1                 | 0                 | 1                 | 0                 | 0          | YES              |
+| 47     | 3                 | 2                 | 1                 | 0                 | 0          | YES              |
+| 99     | 0                 | 0                 | 2                 | 1                 | 0          | YES              |
 
 *Full result CSV available as `results_strategy_a.csv` in the Evasion_Strategies folder.*
+
+### Strategy B
+A selection of modified fraudulent inputs and their outcomes:
+
+| Sample | Original Feature3 | Modified Feature3 | Original Feature6 | Modified Feature6 | Prediction | Evasion Success |
+|--------|-------------------|-------------------|-------------------|-------------------|------------|------------------|
+| 1      | 5                 | 6                 | 0                 | 1                 | 0          | YES              |
+| 5      | 5                 | 6                 | 0                 | 1                 | 0          | YES              |
+| 17     | 5                 | 6                 | 0                 | 1                 | 0          | YES              |
+| 32     | 5                 | 6                 | 0                 | 1                 | 0          | YES              |
+| 100    | 5                 | 6                 | 0                 | 1                 | 0          | YES              |
+
+*Full CSV output saved as `results_strategy_b.csv`.*
+
 
 ## Appendix B: Code Snippets
 ## Appendix C: Additional Performance Metrics
