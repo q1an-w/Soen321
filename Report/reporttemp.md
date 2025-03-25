@@ -56,6 +56,13 @@ This strategy incremented the values of `feature3` and `feature6` by 1 for each 
 
 This strategy was completely successful. The model misclassified every modified fraudulent input as legitimate, highlighting a critical vulnerability. Even slight increases in these two features significantly impacted the model's decision boundary.
 
+#### Strategy C:
+This strategy randomly perturbed every feature (either +1 or -1) for each fraudulent record. It simulates a real-world scenario where an attacker modifies multiple features slightly to evade detection without knowing which ones matter.
+
+- **Evasion Success:** 169 out of 226 samples
+- **Success Rate**: **74.78%**
+
+The high success rate highlights the model’s vulnerability to widespread but subtle feature changes. Even without targeting specific features, nearly 75% of the modified fraudulent inputs were misclassified as legitimate. While not as precise as Strategy B, this approach still bypassed the model in the majority of cases. It suggests that the model's decision boundary is highly sensitive to broad feature noise, not just targeted changes.
 
 ### 2.3 Membership Inference Attacks
 
@@ -133,6 +140,18 @@ A selection of modified fraudulent inputs and their outcomes:
 
 *Full CSV output saved as `results_strategy_b.csv`.*
 
+#### Strategy C
+A selection of randomly modified fraudulent inputs and their outcomes:
+
+| Sample | Feature Changed | Original Value | Modified Value | Prediction | Evasion Success |
+|--------|------------------|----------------|----------------|------------|------------------|
+| 1      | feature2         | 0              | 1              | 1          | NO               |
+| 2      | feature6         | 0              | 1              | 0          | YES              |
+| 9      | feature7         | 3              | 4              | 0          | YES              |
+| 21     | feature5         | 1              | 0              | 0          | YES              |
+| 46     | feature6         | 0              | 1              | 0          | YES              |
+
+*Full result CSV available as `results_strategy_c.csv` in the Evasion_Strategies folder.*
 
 ## Appendix B: Code Snippets
 ## Appendix C: Additional Performance Metrics
