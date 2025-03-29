@@ -3,12 +3,9 @@ import joblib
 import pandas as pd
 import sys
 import os
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from KaggleModel.use_model import predict_fraud
-from evaluate_performance import evaluatePerformance
+from art.attacks.inference.membership_inference import MembershipInferenceBlackBox
+from art.estimators.classification import SklearnClassifier
 
 # In a black-box membership interference attack, we assume that the attacker has access to the outputs of the model.
 
@@ -21,30 +18,31 @@ model_path = os.path.join(os.path.dirname(__file__), '..', 'KaggleModel', 'fraud
 target_model = joblib.load(model_path)
 
 # Generate dataset to train shadow model
-synthetic_data = np.random.rand(10000, 7)*25
-synthetic_data = scaler.transform(synthetic_data)
+# synthetic_data = np.random.rand(10000, 7)*5
+# synthetic_data = scaler.fit_transform(synthetic_data)
+# np.savetxt("synthetic_data.csv", synthetic_data, delimiter=",")
+synthetic_data = np.genfromtxt("Attacks/synthetic_data.csv", delimiter=",")
 y = target_model.predict(synthetic_data)
 X_train, X_test, y_train, y_test = train_test_split(synthetic_data, y, test_size=0.5, random_state=42)
 
-# Train shadow model
-shadow_model = RandomForestClassifier(random_state=42)
-shadow_model.fit(synthetic_data, y)
+art_classifier = SklearnClassifier(model=target_model)
+attack = MembershipInferenceBlackBox(art_classifier)
 
-# Get predictions from shadow model
-test_preds = shadow_model.predict_proba(X_test)[:, 1]
-train_preds = shadow_model.predict_proba(X_train)[:, 1]
+attack.fit(X_train, y_train, X_test, y_test)
 
-# Create labels
-test_labels = np.ones(len(test_preds))
-train_labels = np.zeros(len(train_preds))
+# Evaluate attack performance
+csv_path = os.path.join(os.path.dirname(__file__), '..', 'KaggleModel', 'cc_data.csv')
+data = pd.read_csv(csv_path)
+X = data.drop(columns=["fraud"]).values
+X = scaler.fit_transform(X)
+test_data = np.random.rand(10000, 7) * 5
+test_data = scaler.transform(test_data)
+ 
+preds = np.concatenate((attack.infer(X, np.ones(len(X))), attack.infer(test_data, np.zeros(len(test_data)))))
 
-# Train attack model
-preds = np.concatenate((train_preds, test_preds)).reshape(-1, 1)
-labels = np.concatenate((train_labels, test_labels))
-X_train_attack, X_test_attack, y_train_attack, y_test_attack = train_test_split(
-    preds, labels, test_size=0.2, random_state=42
-)
-attack_model = LogisticRegression(random_state=42)
-attack_model.fit(X_train_attack, y_train_attack)
+count = 0
+for pred in preds:
+    if pred == 0.0:
+        count += 1
 
-evaluatePerformance(attack_model, X_test_attack, y_test_attack)
+print("Number of samples not part of the training data out of 1010000: ", count)
