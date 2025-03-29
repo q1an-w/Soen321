@@ -17,28 +17,29 @@ scaler = joblib.load(scaler_path)
 model_path = os.path.join(os.path.dirname(__file__), '..', 'KaggleModel', 'fraud_model_dt.pkl')
 target_model = joblib.load(model_path)
 
-# Generate dataset to train shadow model
-# synthetic_data = np.random.rand(10000, 7)*5
-# synthetic_data = scaler.fit_transform(synthetic_data)
+# Generate dataset to train attack model
+# synthetic_data = np.random.rand(10000, 7) * 50
+# synthetic_data = scaler.transform(synthetic_data)
 # np.savetxt("synthetic_data.csv", synthetic_data, delimiter=",")
-synthetic_data = np.genfromtxt("Attacks/synthetic_data.csv", delimiter=",")
+csv_path = os.path.join(os.path.dirname(__file__), 'synthetic_data.csv')
+synthetic_data = np.genfromtxt(csv_path, delimiter=",")
 y = target_model.predict(synthetic_data)
 X_train, X_test, y_train, y_test = train_test_split(synthetic_data, y, test_size=0.5, random_state=42)
 
+# Train attack model
 art_classifier = SklearnClassifier(model=target_model)
 attack = MembershipInferenceBlackBox(art_classifier)
-
 attack.fit(X_train, y_train, X_test, y_test)
 
 # Evaluate attack performance
 csv_path = os.path.join(os.path.dirname(__file__), '..', 'KaggleModel', 'cc_data.csv')
 data = pd.read_csv(csv_path)
 X = data.drop(columns=["fraud"]).values
-X = scaler.fit_transform(X)
-test_data = np.random.rand(10000, 7) * 5
+X = scaler.transform(X)
+test_data = np.random.rand(10000, 7) * 50
 test_data = scaler.transform(test_data)
  
-preds = np.concatenate((attack.infer(X, np.ones(len(X))), attack.infer(test_data, np.zeros(len(test_data)))))
+preds = np.concatenate((attack.infer(X, np.ones(len(X))), attack.infer(test_data, np.ones(len(test_data)))))
 
 count = 0
 for pred in preds:
