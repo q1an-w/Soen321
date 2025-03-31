@@ -9,7 +9,7 @@ def evaluatePerformance(model, X_test, y_test):
     ## Test the model
     y_pred = model.predict(X_test)
 
-    ## Generate confusion matrix
+    # Generate confusion matrix
     confusion_matrix = metrics.confusion_matrix(y_test, y_pred)
     sns.heatmap(confusion_matrix, annot=True, fmt='d', cmap='Oranges',
                 xticklabels=['Predicted Normal', 'Predicted Fraud'],
