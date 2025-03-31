@@ -1,11 +1,7 @@
 import os
 import pandas as pd
-import sys
 import joblib
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.metrics import log_loss, roc_curve
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from art.attacks.inference.membership_inference import ShadowModels
 from art.estimators.classification.scikitlearn import ScikitlearnRandomForestClassifier, ScikitlearnDecisionTreeClassifier
@@ -62,9 +58,6 @@ member_data, nonmember_data = art_shadow_model.generate_synthetic_shadow_dataset
 
 # Combine member and non-member data
 synthetic_data = np.vstack((member_data[0], nonmember_data[0]))
-synthetic_labels = np.concatenate(
-    (np.ones(len(member_data[0])), np.zeros(len(nonmember_data[0])))
-)
 
 # Get the leaf indices for training samples
 train_leaf_indices = target_model.apply(synthetic_data)
