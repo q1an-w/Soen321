@@ -1,49 +1,88 @@
 import os
-import joblib
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
+import sys
+import joblib
 import numpy as np
-from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+from sklearn.metrics import log_loss, roc_curve
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from art.attacks.inference.membership_inference import ShadowModels
+from art.estimators.classification.scikitlearn import ScikitlearnRandomForestClassifier, ScikitlearnDecisionTreeClassifier
 
-# In a white-box membership interference attack, we assume that the attacker has full access to the model's structure
-
-# Get model
-model_path = os.path.join(os.path.dirname(__file__), '..', 'KaggleModel', 'fraud_model_dt.pkl')
+# Load target model
+model_path = os.path.join(
+    os.path.dirname(__file__), "..", "KaggleModel", "fraud_model_dt.pkl"
+)
 target_model = joblib.load(model_path)
+art_target_model = ScikitlearnDecisionTreeClassifier(model=target_model)
 
-# Get data from black box adversarial attack
-csv_path = os.path.join(os.path.dirname(__file__), 'output_file.csv')
+# Load scaler
+scaler_path = os.path.join(os.path.dirname(__file__), "..", "KaggleModel", "scaler.pkl")
+scaler = joblib.load(scaler_path)
+
+# Callbacks
+def random_record_callback():
+    """Callback function to generate random records."""
+    out = np.random.rand(7) * 5
+    out = np.array(out).reshape(1, -1)
+    out = scaler.transform(out).flatten()
+    return out
+
+
+def randomize_features_callback(record: np.ndarray, num_features: int):
+    """Callback function to randomize features."""
+    new_record = record.copy()
+    for _ in range(num_features):
+        new_val = np.random.rand(7) * 5
+        new_val = np.array(new_val).reshape(1, -1)
+        new_val = scaler.transform(new_val).flatten()
+        new_record[np.random.randint(0, 7)] = new_val[np.random.randint(0, 7)]
+    return new_record
+
+
+# Create shadow models
+art_shadow_model = ScikitlearnRandomForestClassifier(
+    model=RandomForestClassifier(random_state=42, max_depth=5)
+)
+art_shadow_model.set_params(nb_classes=2)
+art_shadow_model = ShadowModels(
+    shadow_model_template=art_shadow_model, num_shadow_models=2, random_state=42
+)
+
+# Generate member and non-member data
+member_data, nonmember_data = art_shadow_model.generate_synthetic_shadow_dataset(
+    target_classifier=art_target_model,
+    dataset_size=10000,
+    max_features_randomized=7,
+    random_record_fn=random_record_callback,
+    randomize_features_fn=randomize_features_callback,
+    max_retries=100,
+)
+
+# Combine member and non-member data
+synthetic_data = np.vstack((member_data[0], nonmember_data[0]))
+synthetic_labels = np.concatenate(
+    (np.ones(len(member_data[0])), np.zeros(len(nonmember_data[0])))
+)
+
+# Get the leaf indices for training samples
+train_leaf_indices = target_model.apply(synthetic_data)
+
+# Perform membership inference attack
+csv_path = os.path.join(os.path.dirname(__file__), "..", "KaggleModel", "cc_data.csv")
 data = pd.read_csv(csv_path)
-data = pd.read_csv(csv_path)
-X = data.drop(columns=['target']).values
-y = data["target"].values  # Labels (0 = Not Fraud, 1 = Fraud)
+member_data = data.drop(columns=["fraud"]).values
+member_data = scaler.transform(member_data)
+target_leaf_indices = target_model.apply(member_data)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+# Check if target samples share leaf nodes with training samples
+membership_predictions = [leaf in train_leaf_indices for leaf in target_leaf_indices]
 
-# Extract leaf indices for training and test samples
-train_leaf_indices = target_model.apply(X_train)
-test_leaf_indices = target_model.apply(X_test)
-
-# Create attack dataset
-X_attack = np.hstack((train_leaf_indices.reshape(-1, 1), target_model.predict_proba(X_train)))
-y_attack = np.ones(len(X_train))
-
-X_attack_test = np.hstack((test_leaf_indices.reshape(-1, 1), target_model.predict_proba(X_test)))
-y_attack_test = np.zeros(len(X_test))
-
-X_attack_full = np.vstack((X_attack, X_attack_test))
-y_attack_full = np.hstack((y_attack, y_attack_test))
-
-# Split attack dataset
-X_attack_train, X_attack_val, y_attack_train, y_attack_val = train_test_split(X_attack_full, y_attack_full, test_size=0.2, random_state=42)
-
-# Train attack model
-attack_model = DecisionTreeClassifier(random_state=42)
-attack_model.fit(X_attack_train, y_attack_train)
-
-# Evaluate attack
-y_pred = attack_model.predict(X_attack_val)
-attack_acc = accuracy_score(y_attack_val, y_pred)
-
-print("White-Box Attack Accuracy:", attack_acc)
+# Evaluate performance
+count = 0
+for (_, is_member) in enumerate(zip(target_leaf_indices, membership_predictions)):
+    if is_member:
+        count += 1
+accuracy = count / len(member_data)
+print('Accuracy: ', accuracy)
