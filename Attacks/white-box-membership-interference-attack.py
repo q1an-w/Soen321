@@ -74,7 +74,7 @@ membership_predictions = [leaf in train_leaf_indices for leaf in target_leaf_ind
 
 # Evaluate performance
 count = 0
-for (_, is_member) in enumerate(zip(target_leaf_indices, membership_predictions)):
+for is_member in membership_predictions:
     if is_member:
         count += 1
 accuracy = count / len(member_data)
