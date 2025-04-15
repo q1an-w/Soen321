@@ -14,7 +14,7 @@ file_path = os.path.join(script_dir, "cc_data.csv")
 cc_df = pd.read_csv(file_path)
 
 # Split data to isolate target variable
-X = cc_df.drop(columns=['fraud'], axis=1)
+X = cc_df.drop(columns='fraud', axis=1)
 y = cc_df['fraud']
 
 # Create a LabelEncoder object
@@ -32,7 +32,7 @@ random_forest_model = RandomForestClassifier(criterion='entropy', random_state=4
 random_forest_model.fit(X_train, y_train)
 
 # Save the trained model
-joblib.dump(random_forest_model, 'random_forest_model.plk')
+joblib.dump(random_forest_model, os.path.join(script_dir, "random_forest_model.pkl"))
 
 # Predict target variable
 y_test = random_forest_model.predict(X_test)
