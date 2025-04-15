@@ -1,6 +1,7 @@
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
 import joblib
 import pandas as pd
 import sys
@@ -23,6 +24,12 @@ le = LabelEncoder()
 # Transform categorical data
 for col in X.select_dtypes(include=['object']).columns:
     X[col] = le.fit_transform(X[col])
+
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
+# Save the scaler for later use
+joblib.dump(scaler, os.path.join(script_dir, "rf_scaler.pkl"))
 
 # Split data into train and test data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

@@ -5,10 +5,10 @@ import joblib  # For loading the model and scaler
 # Load model and scaler
 script_dir = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(script_dir, "random_forest_model.pkl")  # Load the random forest model
-scaler_path = os.path.join(script_dir, "scaler.pkl")
+scaler_path = os.path.join(script_dir, "rf_scaler.pkl")
 
 model = joblib.load(model_path)  # Load the RandomForestClassifier model
-scaler = joblib.load(scaler_path)  # Load the scaler
+rf_scaler = joblib.load(scaler_path)  # Load the scaler
 
 # Function to predict fraud probability
 def predict_fraud_v2(transaction):
@@ -19,7 +19,7 @@ def predict_fraud_v2(transaction):
     :return: Fraud probability as a percentage
     """
     transaction = np.array(transaction).reshape(1, -1)
-    transaction = scaler.transform(transaction)  # Standardize features
+    transaction = rf_scaler.transform(transaction)  # Standardize features
     fraud_probability = model.predict_proba(transaction)[:, 1]  # Get probability of the positive class (fraud)
     return round(fraud_probability[0] * 100, 2)
 
