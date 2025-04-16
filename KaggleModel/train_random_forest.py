@@ -18,13 +18,6 @@ cc_df = pd.read_csv(file_path)
 X = cc_df.drop(columns='fraud', axis=1)
 y = cc_df['fraud']
 
-# Create a LabelEncoder object
-le = LabelEncoder()
-
-# Transform categorical data
-for col in X.select_dtypes(include=['object']).columns:
-    X[col] = le.fit_transform(X[col])
-
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
