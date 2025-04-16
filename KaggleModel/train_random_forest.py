@@ -42,5 +42,5 @@ random_forest_model.fit(X_train, y_train)
 joblib.dump(random_forest_model, os.path.join(script_dir, "random_forest_model.pkl"))
 
 # Predict target variable
-y_test = random_forest_model.predict(X_test)
+y_pred = random_forest_model.predict(X_test)
 evaluatePerformance(random_forest_model, X_test, y_test)
