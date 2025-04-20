@@ -64,6 +64,14 @@ After transformation and scaling, predictions were evaluated against the origina
 - **Success Rate: 18.12%**
 Although the evasion success rate was still relatively low, it outperformed the decision tree’s 15.49%, suggesting that the Random Forest is slightly more vulnerable to this type of targeted feature reduction. This shows that even ensemble models can be evaded with minimal, targeted manipulation under black-box assumptions.
 
+#### Strategy A (Gradient Boosting Classifier)
+The same Strategy A—reducing feature5 and feature7 by 1—was evaluated against the Gradient Boosting Classifier to test its robustness to minimal, targeted changes.
+
+Despite the model's more complex ensemble structure, the attack succeeded on 52 of 230 known fraudulent inputs:
+- **Evasion Success: 52 out of 230**
+- **Success Rate: 22.61%**
+This makes Gradient Boosting the most vulnerable among all three models tested under Strategy A. The results suggest that while GB models are typically more accurate, they may also be more sensitive to small feature changes, especially when trained with strong patterns that can be easily nudged.
+
 #### Strategy B:
 This strategy incremented the values of `feature3` and `feature6` by 1 for each fraudulent input. These changes were hypothesized to make fraudulent behavior appear more benign.
 
@@ -169,6 +177,20 @@ A selection of the modified fraudulent inputs and their outcomes:
 | 40     | 0                 | 0                 | 2                 | 1                 | 0          | YES              |
 
 The full result list is available in `results_strategy_a_rf.csv`in the Evasion_Strategies folder.
+
+### Strategy A – Gradient Boosting
+
+A selection of the modified fraudulent inputs and their outcomes:
+
+| Sample | Original Feature5 | Modified Feature5 | Original Feature7 | Modified Feature7 | Prediction | Evasion Success |
+|--------|-------------------|-------------------|-------------------|-------------------|------------|------------------|
+| 1      | 3                 | 2                 | 1                 | 0                 | 0          | YES              |
+| 4      | 4                 | 3                 | 2                 | 1                 | 0          | YES              |
+| 17     | 5                 | 4                 | 2                 | 1                 | 0          | YES              |
+| 36     | 4                 | 3                 | 0                 | 0                 | 0          | YES              |
+| 68     | 2                 | 1                 | 4                 | 3                 | 0          | YES              |
+
+The full result list is available in `results_strategy_a_gb.csv`in the Evasion_Strategies folder.
 
 ### Strategy B
 A selection of modified fraudulent inputs and their outcomes:
