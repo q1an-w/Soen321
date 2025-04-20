@@ -48,6 +48,17 @@ This strategy reduced the values of `feature5` and `feature7` by 1, assuming the
 - **Success Rate**: **15.49%**
 The result shows that even small input modifications to key features can lead to incorrect non-fraud classification by the model.
 
+#### Strategy A (Decision Tree Classifier)
+To evaluate the robustness of the decision tree classifier, we applied Strategy (A) a targeted evasion technique that reduces feature5 and feature7 by 1 for each known fraudulent input. These features were hypothesized to significantly influence the model's fraud detection logic.
+
+After scaling and passing the modified samples through the original model, the results revealed:
+- **Evasion Success: 35 out of 226 samples**
+- **Success Rate: 15.49%**
+These results show that even a simple and minimal modification to key features can cause misclassification. Although not as extreme as other strategies, this technique still allowed 15.49% of fraudulent cases to evade detection — exposing a tangible weakness in the decision tree’s boundary sensitivity.
+
+The full result set is saved in results_strategy_a_dt.csv.
+
+
 #### Strategy B:
 This strategy incremented the values of `feature3` and `feature6` by 1 for each fraudulent input. These changes were hypothesized to make fraudulent behavior appear more benign.
 
@@ -126,6 +137,18 @@ A selection of the modified fraudulent inputs and their outcomes:
 | 99     | 0                 | 0                 | 2                 | 1                 | 0          | YES              |
 
 *Full result CSV available as `results_strategy_a.csv` in the Evasion_Strategies folder.*
+
+### Strategy A - Decision Tree
+A selection of the modified fraudulent inputs and their outcomes:
+
+| Sample | Original Feature5 | Modified Feature5 | Original Feature7 | Modified Feature7 | Prediction | Evasion Success |
+|--------|-------------------|-------------------|-------------------|-------------------|------------|------------------|
+| 1      | 5                 | 4                 | 5                 | 4                 | 1          | NO               |
+| 4      | 4                 | 3                 | 1                 | 0                 | 0          | YES              |
+| 20     | 1                 | 0                 | 1                 | 0                 | 0          | YES              |
+| 47     | 3                 | 2                 | 1                 | 0                 | 0          | YES              |
+| 99     | 2                 | 1                 | 2                 | 1                 | 0          | YES              |
+
 
 ### Strategy B
 A selection of modified fraudulent inputs and their outcomes:
