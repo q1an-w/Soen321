@@ -134,11 +134,11 @@ X_train, X_test, y_train, y_test = train_test_split(gb_X, gb_y, test_size=0.2, r
 
 # Training gradient boosting surrogate
 print("Training gradient booster surrogate....")
-rf_model = GradientBoostingClassifier(random_state=42)
-rf_model.fit(X_train, y_train)
+gb_model = GradientBoostingClassifier(random_state=42)
+gb_model.fit(X_train, y_train)
 print("Finished training gradient booster surrogate!")
 
 # Evaluating gradient booster
 print("Evaluating gradient booster surrogate....")
-evaluatePerformance(rf_model,X_test,y_test)
+evaluatePerformance(gb_model, X_test, y_test)
 print("Finished evaluating gradient booster surrogate!")
