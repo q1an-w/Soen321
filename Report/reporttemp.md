@@ -56,8 +56,13 @@ After scaling and passing the modified samples through the original model, the r
 - **Success Rate: 15.49%**
 These results show that even a simple and minimal modification to key features can cause misclassification. Although not as extreme as other strategies, this technique still allowed 15.49% of fraudulent cases to evade detection — exposing a tangible weakness in the decision tree’s boundary sensitivity.
 
-The full result set is saved in results_strategy_a_dt.csv.
+#### Strategy A (Random Forest Classifier)
+Strategy A was applied to the Random Forest classifier by decreasing feature5 and feature7 by 1 for each known fraudulent input, in line with the decision tree test. This strategy targeted features suspected to heavily influence the fraud prediction outcome.
 
+After transformation and scaling, predictions were evaluated against the original model. The results were as follows:
+- **Evasion Success: 27 out of 149 samples**
+- **Success Rate: 18.12%**
+Although the evasion success rate was still relatively low, it outperformed the decision tree’s 15.49%, suggesting that the Random Forest is slightly more vulnerable to this type of targeted feature reduction. This shows that even ensemble models can be evaded with minimal, targeted manipulation under black-box assumptions.
 
 #### Strategy B:
 This strategy incremented the values of `feature3` and `feature6` by 1 for each fraudulent input. These changes were hypothesized to make fraudulent behavior appear more benign.
@@ -149,6 +154,21 @@ A selection of the modified fraudulent inputs and their outcomes:
 | 47     | 3                 | 2                 | 1                 | 0                 | 0          | YES              |
 | 99     | 2                 | 1                 | 2                 | 1                 | 0          | YES              |
 
+For the complete list, refer to /`results_strategy_a_dt.csv` in the Evasion_Strategies folder.
+
+### Strategy A – Random Forest
+
+A selection of the modified fraudulent inputs and their outcomes:
+
+| Sample | Original Feature5 | Modified Feature5 | Original Feature7 | Modified Feature7 | Prediction | Evasion Success |
+|--------|-------------------|-------------------|-------------------|-------------------|------------|------------------|
+| 3      | 5                 | 4                 | 1                 | 0                 | 0          | YES              |
+| 10     | 3                 | 2                 | 1                 | 0                 | 0          | YES              |
+| 17     | 5                 | 4                 | 0                 | 0                 | 0          | YES              |
+| 26     | 2                 | 1                 | 0                 | 0                 | 0          | YES              |
+| 40     | 0                 | 0                 | 2                 | 1                 | 0          | YES              |
+
+The full result list is available in `results_strategy_a_rf.csv`in the Evasion_Strategies folder.
 
 ### Strategy B
 A selection of modified fraudulent inputs and their outcomes:
