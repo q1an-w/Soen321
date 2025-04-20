@@ -80,6 +80,17 @@ This strategy incremented the values of `feature3` and `feature6` by 1 for each 
 
 This strategy was completely successful. The model misclassified every modified fraudulent input as legitimate, highlighting a critical vulnerability. Even slight increases in these two features significantly impacted the model's decision boundary.
 
+#### Strategy B – Random Forest
+This evasion strategy aimed to exploit weaknesses in the Random Forest fraud detection model by subtly modifying specific features of known fraudulent inputs. In particular:
+- `feature3` was increased by +1
+- `feature6` was increased by +1
+These changes were based on the hypothesis that boosting these two feature values would make fraudulent behavior appear more "normal" to the model.
+
+Results:
+- **Evasion Success: 149 out of 149 samples**
+- **Success Rate: 100.00%**
+The Random Forest classifier failed to flag any of the modified fraudulent records, indicating a severe vulnerability to this specific perturbation. The attack was completely successful, as every altered sample evaded detection.
+
 #### Strategy C:
 This strategy randomly perturbed every feature (either +1 or -1) for each fraudulent record. It simulates a real-world scenario where an attacker modifies multiple features slightly to evade detection without knowing which ones matter.
 
@@ -204,6 +215,19 @@ A selection of modified fraudulent inputs and their outcomes:
 | 100    | 5                 | 6                 | 0                 | 1                 | 0          | YES              |
 
 *Full CSV output saved as `results_strategy_b.csv`.*
+
+### Strategy B – Random Forest
+A selection of the modified fraudulent inputs and their outcomes:
+
+| Sample | Original Feature3 | Modified Feature3 | Original Feature6 | Modified Feature6 | Prediction | Evasion Success |
+|--------|-------------------|-------------------|-------------------|-------------------|------------|------------------|
+| 1      | 5                 | 6                 | 0                 | 1                 | 0          | YES              |
+| 7      | 5                 | 6                 | 0                 | 1                 | 0          | YES              |
+| 22     | 5                 | 6                 | 0                 | 1                 | 0          | YES              |
+| 43     | 5                 | 6                 | 0                 | 1                 | 0          | YES              |
+| 90     | 5                 | 6                 | 0                 | 1                 | 0          | YES              |
+
+Full CSV output saved as results_strategy_b_rf.csv.
 
 #### Strategy C
 A selection of randomly modified fraudulent inputs and their outcomes:
