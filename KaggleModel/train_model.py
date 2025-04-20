@@ -20,7 +20,7 @@ df = pd.read_csv(file_path)
 if df.isnull().sum().sum() > 0:
     df = df.dropna()
 
-# Define the column names (replace with your actual dataset columns if necessary)
+# Define the column names
 columns = ['distance_from_home', 'distance_from_last_transaction', 'ratio_to_median_purchase_price', 
            'repeat_retailer', 'used_chip', 'used_pin_number', 'online_order', 'fraud']
 
