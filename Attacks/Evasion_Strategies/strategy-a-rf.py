@@ -21,7 +21,7 @@ X_mod = X_original.copy().apply(strategy_a, axis=1)
 # Load Random Forest model + scaler
 model = joblib.load("../../KaggleModel/random_forest_model.pkl")
 scaler = joblib.load("../../KaggleModel/rf_scaler.pkl")
-X_scaled = scaler.transform(X_mod)
+X_scaled = scaler.transform(X_mod.values)
 
 # Predict and evaluate
 predictions = model.predict(X_scaled)
