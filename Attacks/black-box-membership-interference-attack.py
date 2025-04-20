@@ -3,13 +3,12 @@ import joblib
 import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
 from art.attacks.inference.membership_inference import (
     MembershipInferenceBlackBox,
     ShadowModels,
 )
 from art.estimators.classification.scikitlearn import (
-    ScikitlearnRandomForestClassifier,
     ScikitlearnDecisionTreeClassifier,
 )
 
@@ -28,7 +27,7 @@ target_model = joblib.load(model_path)
 
 def random_record_callback():
     """Callback function to generate random records."""
-    out = np.random.rand(7) * 10
+    out = np.random.rand(7) * 10000
     out = np.array(out).reshape(1, -1)
     out = scaler.transform(out).flatten()
     return out
@@ -38,7 +37,7 @@ def randomize_features_callback(record: np.ndarray, num_features: int):
     """Callback function to randomize features."""
     new_record = record.copy()
     for _ in range(num_features):
-        new_val = np.random.rand(7) * 0
+        new_val = np.random.rand(7) * 10000
         new_val = np.array(new_val).reshape(1, -1)
         new_val = scaler.transform(new_val).flatten()
         new_record[np.random.randint(0, 7)] = new_val[np.random.randint(0, 7)]
@@ -46,8 +45,8 @@ def randomize_features_callback(record: np.ndarray, num_features: int):
 
 
 # Create shadow model
-art_shadow_model = ScikitlearnRandomForestClassifier(
-    model=RandomForestClassifier(random_state=42, max_depth=5)
+art_shadow_model = ScikitlearnDecisionTreeClassifier(
+    model=DecisionTreeClassifier(random_state=42, max_depth=5)
 )
 art_shadow_model.set_params(nb_classes=2)
 art_shadow_model = ShadowModels(
@@ -59,7 +58,7 @@ art_target_model = ScikitlearnDecisionTreeClassifier(model=target_model)
 member_data, nonmember_data = art_shadow_model.generate_synthetic_shadow_dataset(
     target_classifier=art_target_model,
     dataset_size=10000,
-    max_features_randomized=7,
+    max_features_randomized=4,
     random_record_fn=random_record_callback,
     randomize_features_fn=randomize_features_callback,
     max_retries=100,
@@ -98,3 +97,4 @@ for i in range(len(preds)):
         correct_predictions += 1
 accuracy = correct_predictions / len(preds)
 print("Accuracy: ", accuracy)
+print('Pred: ', correct_predictions, '\tActual: ', len(preds))

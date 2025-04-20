@@ -79,3 +79,4 @@ for is_member in membership_predictions:
         count += 1
 accuracy = count / len(member_data)
 print('Accuracy: ', accuracy)
+print('Pred: ', count, '\tActual: ', len(member_data))
