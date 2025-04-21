@@ -140,6 +140,19 @@ Results:
 
 The significantly high evasion success rate implies that even without targeting any specific feature, the model is highly vulnerable to small, random perturbations across the feature space. Despite the ensemble nature of Random Forests, this result suggests insufficient robustness under non-targeted adversarial inputs, making this a serious concern for real-world deployment.
 
+#### Strategy C (Gradient Boosting Classifier)
+
+This strategy tested the resilience of the Gradient Boosting fraud detection model by applying random perturbations of ±1 across all features of known fraudulent inputs. The intent was to mimic realistic black-box attack behavior, where an attacker modifies every available feature slightly without knowing which ones are most influential.
+
+Following the feature alterations and proper scaling, the modified fraudulent records were evaluated against the Gradient Boosting model.
+
+Results:
+
+- **Evasion Success: 186 out of 230 samples**
+- **Success Rate: 80.87%**
+
+The high evasion success rate suggests that the Gradient Boosting model is also highly susceptible to wide, low-magnitude feature changes. Despite being the most accurate model under normal conditions, its fine-grained thresholds make it more vulnerable to distributed input noise. This underlines the importance of adversarial training or input validation to protect such models in production systems.
+
 ### 2.3 Membership Inference Attacks
 
 ## 3. Testing Framework
@@ -288,7 +301,7 @@ A selection of the modified fraudulent inputs and their outcomes:
 | 43     | 5                 | 6                 | 0                 | 1                 | 0          | YES             |
 | 90     | 5                 | 6                 | 0                 | 1                 | 0          | YES             |
 
-_Full CSV output saved as results_strategy_b_rf.csv inside the `Evasion_Strategies` folder._
+_Full CSV output saved as `results_strategy_b_rf.csv` inside the `Evasion_Strategies` folder._
 
 ### Strategy B – Gradient Boosting
 
@@ -331,6 +344,21 @@ A selection of randomly modified fraudulent inputs and their outcomes:
 | 42     | feature6        | 0              | 1              | 0          | YES             |
 
 _Full result CSV available as `results_strategy_c_rf.csv` in the `Evasion_Strategies` folder._
+
+### Strategy C - Gradient Boosting
+
+| Feature1 | Feature2 | Feature3 | Feature4 | Feature5 | Feature6 | Feature7 | Target | Prediction | Evasion_Success |
+| -------- | -------- | -------- | -------- | -------- | -------- | -------- | ------ | ---------- | --------------- |
+| 4        | 5        | 5        | 5        | 3        | 0        | 1        | 1      | 0.0        | YES             |
+| 5        | 4        | 5        | 0        | 0        | 0        | 5        | 1      | 0.0        | YES             |
+| 2        | 5        | 5        | 2        | 4        | 0        | 1        | 1      | 1.0        | NO              |
+| 0        | 0        | 5        | 0        | 4        | 0        | 3        | 1      | 1.0        | NO              |
+| 0        | 5        | 5        | 4        | 1        | 0        | 4        | 1      | 0.0        | YES             |
+| ...      | ...      | ...      | ...      | ...      | ...      | ...      | ...    | ...        | ...             |
+| 5        | 5        | 5        | 4        | 4        | 0        | 4        | 1      | 0.0        | YES             |
+| 0        | 5        | 5        | 0        | 2        | 0        | 5        | 1      | 0.0        | YES             |
+
+_Full result CSV available as `results_strategy_c_gb.csv` in the `Evasion_Strategies` folder._
 
 ## Appendix B: Code Snippets
 
