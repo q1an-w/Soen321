@@ -1,6 +1,6 @@
 import joblib
 
-# Load the already-trained model from your friend's file
+# Load already trained model
 model = joblib.load("random_forest_model.pkl")
 
 # Re-save the model with a new name (don't overwrite!)
