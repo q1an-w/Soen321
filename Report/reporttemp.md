@@ -56,23 +56,13 @@ Each evasion attack slightly perturbs known fraudulent inputs and tests whether 
 
 We structured our attacks using separate strategy scripts to preserve clarity and modular testing.
 
-#### Strategy A:
+#### Strategy A (Decision Tree Classifier):
 
 This strategy reduced the values of `feature5` and `feature7` by 1, assuming these features contribute significantly to fraud detection. After applying this transformation and testing against the original model, we achieved:
 
 - **Evasion Success**: 35 out of 226 samples
 - **Success Rate**: **15.49%**
   The result shows that even small input modifications to key features can lead to incorrect non-fraud classification by the model.
-
-#### Strategy A (Decision Tree Classifier)
-
-To evaluate the robustness of the decision tree classifier, we applied Strategy (A) a targeted evasion technique that reduces feature5 and feature7 by 1 for each known fraudulent input. These features were hypothesized to significantly influence the model's fraud detection logic.
-
-After scaling and passing the modified samples through the original model, the results revealed:
-
-- **Evasion Success: 35 out of 226 samples**
-- **Success Rate: 15.49%**
-  These results show that even a simple and minimal modification to key features can cause misclassification. Although not as extreme as other strategies, this technique still allowed 15.49% of fraudulent cases to evade detection — exposing a tangible weakness in the decision tree’s boundary sensitivity.
 
 #### Strategy A (Random Forest Classifier)
 
@@ -94,7 +84,7 @@ Despite the model's more complex ensemble structure, the attack succeeded on 52 
 - **Success Rate: 22.61%**
   This makes Gradient Boosting the most vulnerable among all three models tested under Strategy A. The results suggest that while GB models are typically more accurate, they may also be more sensitive to small feature changes, especially when trained with strong patterns that can be easily nudged.
 
-#### Strategy B:
+#### Strategy B (Decision Tree Classifier):
 
 This strategy incremented the values of `feature3` and `feature6` by 1 for each fraudulent input. These changes were hypothesized to make fraudulent behavior appear more benign.
 
@@ -103,7 +93,7 @@ This strategy incremented the values of `feature3` and `feature6` by 1 for each 
 
 This strategy was completely successful. The model misclassified every modified fraudulent input as legitimate, highlighting a critical vulnerability. Even slight increases in these two features significantly impacted the model's decision boundary.
 
-#### Strategy B – Random Forest
+#### Strategy B (Random Forest Classifier)
 
 This evasion strategy aimed to exploit weaknesses in the Random Forest fraud detection model by subtly modifying specific features of known fraudulent inputs. In particular:
 
@@ -128,7 +118,7 @@ The results were even more concerning than with the Random Forest. The Gradient 
 
 These findings show that while Gradient Boosting is typically more accurate in baseline predictions, it may be more brittle under adversarial pressure. Slight increases in specific features can fully collapse its fraud detection performance, likely due to its reliance on fine-grained decision thresholds that shift easily under targeted input noise.
 
-#### Strategy C:
+#### Strategy C (Decision Tree Classifier):
 
 This strategy randomly perturbed every feature (either +1 or -1) for each fraudulent record. It simulates a real-world scenario where an attacker modifies multiple features slightly to evade detection without knowing which ones matter.
 
@@ -136,6 +126,19 @@ This strategy randomly perturbed every feature (either +1 or -1) for each fraudu
 - **Success Rate**: **74.78%**
 
 The high success rate highlights the model’s vulnerability to widespread but subtle feature changes. Even without targeting specific features, nearly 75% of the modified fraudulent inputs were misclassified as legitimate. While not as precise as Strategy B, this approach still bypassed the model in the majority of cases. It suggests that the model's decision boundary is highly sensitive to broad feature noise, not just targeted changes.
+
+#### Strategy C (Random Forest Classifier)
+
+This strategy simulates a real-world black-box scenario where an attacker, unaware of specific feature importance, slightly perturbs every feature (+1 or -1) of known fraudulent inputs. This method tests how well the Random Forest model handles broad, subtle noise.
+
+After modifying all features and scaling them using the original scaler, the transformed samples were passed into the Random Forest fraud detection model.
+
+Results:
+
+- **Evasion Success: 182 out of 226 samples**
+- **Success Rate: 80.53%**
+
+The significantly high evasion success rate implies that even without targeting any specific feature, the model is highly vulnerable to small, random perturbations across the feature space. Despite the ensemble nature of Random Forests, this result suggests insufficient robustness under non-targeted adversarial inputs, making this a serious concern for real-world deployment.
 
 ### 2.3 Membership Inference Attacks
 
@@ -229,21 +232,7 @@ A selection of the modified fraudulent inputs and their outcomes:
 | 47     | 3                 | 2                 | 1                 | 0                 | 0          | YES             |
 | 99     | 0                 | 0                 | 2                 | 1                 | 0          | YES             |
 
-_Full result CSV available as `results_strategy_a.csv` in the Evasion_Strategies folder._
-
-### Strategy A - Decision Tree
-
-A selection of the modified fraudulent inputs and their outcomes:
-
-| Sample | Original Feature5 | Modified Feature5 | Original Feature7 | Modified Feature7 | Prediction | Evasion Success |
-| ------ | ----------------- | ----------------- | ----------------- | ----------------- | ---------- | --------------- |
-| 1      | 5                 | 4                 | 5                 | 4                 | 1          | NO              |
-| 4      | 4                 | 3                 | 1                 | 0                 | 0          | YES             |
-| 20     | 1                 | 0                 | 1                 | 0                 | 0          | YES             |
-| 47     | 3                 | 2                 | 1                 | 0                 | 0          | YES             |
-| 99     | 2                 | 1                 | 2                 | 1                 | 0          | YES             |
-
-For the complete list, refer to /`results_strategy_a_dt.csv` in the Evasion_Strategies folder.
+_Full result CSV available as `results_strategy_a.csv` in the `Evasion_Strategies` folder._
 
 ### Strategy A – Random Forest
 
@@ -257,7 +246,7 @@ A selection of the modified fraudulent inputs and their outcomes:
 | 26     | 2                 | 1                 | 0                 | 0                 | 0          | YES             |
 | 40     | 0                 | 0                 | 2                 | 1                 | 0          | YES             |
 
-The full result list is available in `results_strategy_a_rf.csv`in the Evasion_Strategies folder.
+The full result list is available in `results_strategy_a_rf.csv`in the `Evasion_Strategies` folder.
 
 ### Strategy A – Gradient Boosting
 
@@ -271,7 +260,7 @@ A selection of the modified fraudulent inputs and their outcomes:
 | 36     | 4                 | 3                 | 0                 | 0                 | 0          | YES             |
 | 68     | 2                 | 1                 | 4                 | 3                 | 0          | YES             |
 
-The full result list is available in `results_strategy_a_gb.csv`in the Evasion_Strategies folder.
+The full result list is available in `results_strategy_a_gb.csv`in the `Evasion_Strategies` folder.
 
 ### Strategy B
 
@@ -285,7 +274,7 @@ A selection of modified fraudulent inputs and their outcomes:
 | 32     | 5                 | 6                 | 0                 | 1                 | 0          | YES             |
 | 100    | 5                 | 6                 | 0                 | 1                 | 0          | YES             |
 
-_Full CSV output saved as `results_strategy_b.csv`._
+_Full CSV output saved as `results_strategy_b.csv` inside the `Evasion_Strategies` folder._
 
 ### Strategy B – Random Forest
 
@@ -299,7 +288,7 @@ A selection of the modified fraudulent inputs and their outcomes:
 | 43     | 5                 | 6                 | 0                 | 1                 | 0          | YES             |
 | 90     | 5                 | 6                 | 0                 | 1                 | 0          | YES             |
 
-Full CSV output saved as results_strategy_b_rf.csv.
+_Full CSV output saved as results_strategy_b_rf.csv inside the `Evasion_Strategies` folder._
 
 ### Strategy B – Gradient Boosting
 
@@ -313,7 +302,7 @@ A selection of the modified fraudulent inputs and their outcomes:
 | 42     | 5                 | 6                 | 0                 | 1                 | 0          | YES             |
 | 107    | 5                 | 6                 | 0                 | 1                 | 0          | YES             |
 
-The full result list is available in `results_strategy_b_gb.csv` inside the `Evasion_Strategies` folder.
+_The full result list is available in `results_strategy_b_gb.csv` inside the `Evasion_Strategies` folder._
 
 ### Strategy C
 
@@ -327,7 +316,21 @@ A selection of randomly modified fraudulent inputs and their outcomes:
 | 21     | feature5        | 1              | 0              | 0          | YES             |
 | 46     | feature6        | 0              | 1              | 0          | YES             |
 
-_Full result CSV available as `results_strategy_c.csv` in the Evasion_Strategies folder._
+_Full result CSV available as `results_strategy_c.csv` in the `Evasion_Strategies` folder._
+
+### Strategy C – Random Forest
+
+A selection of randomly modified fraudulent inputs and their outcomes:
+
+| Sample | Feature Changed | Original Value | Modified Value | Prediction | Evasion Success |
+| ------ | --------------- | -------------- | -------------- | ---------- | --------------- |
+| 1      | feature1        | 2              | 3              | 0          | YES             |
+| 3      | feature5        | 0              | 1              | 0          | YES             |
+| 7      | feature2        | 5              | 4              | 0          | YES             |
+| 15     | feature4        | 5              | 4              | 1          | NO              |
+| 42     | feature6        | 0              | 1              | 0          | YES             |
+
+_Full result CSV available as `results_strategy_c_rf.csv` in the `Evasion_Strategies` folder._
 
 ## Appendix B: Code Snippets
 
