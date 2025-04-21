@@ -13,6 +13,10 @@ Mohamad Mounir Yassin (ID: 40198854)
 
 Yash Patel (ID: 40175454)
 
+## Brief Project Overview
+
+The goal of this project is to analyze and compare the effects of various attack methods on three different machine learning algorithms with the intention of identifying critical vulnerabilities and propose countermeasures for future improvements.
+
 ## File Explanation
 
 ### 1) Report folder
