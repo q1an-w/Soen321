@@ -38,8 +38,10 @@ The goal of this project is to analyze and compare the effects of various attack
       - **output_file.csv** (for decision tree surrogate training data)
       - **rf_output_file.csv** (for random forest surrogate training data)
       - **gb_output_file.csv** (for gradient boosting surrogate training data)
-  - The **black-box-membership-interference.py** script contains the code that generates a black-box membership interference attack on all three models.
-  - The **white-box-membership-interference.py** script contains the code that generates a white-box membership interference attack on all three models.
+  - The **black-box-membership-inference.py** script contains the code that generates a black-box membership inference attack on all three models. This file also creates 2 training datasets for the attack model:
+      - **dt_shadow_dataset.pkl** for the decision tree and random forest model
+      - **gb_shadow_dataset.pkl** for the gradient boosting model
+  - The **white-box-membership-inference.py** script contains the code that generates a white-box membership inference attack on all three models.
   - The **poison_attacks.ipynb** file implements a poisoning attack on all three models.
   - The **slowris.py** script implements several DoS attacks.
   - The **DoS_Attacks.xlsx** is an excel sheet that displays the results of the three different DoS attacks.
